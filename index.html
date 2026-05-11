@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Fallacy Files</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sage-50:  #F2F7F4;
+  --sage-100: #D9EDE2;
+  --sage-200: #B3D5C3;
+  --sage-400: #72A98A;
+  --sage-600: #4A7A60;
+  --sage-800: #2C5040;
+  --sage-900: #182E25;
+  --pink-50:  #FDF0F3;
+  --pink-100: #F7CDD8;
+  --pink-200: #EFAABB;
+  --pink-400: #D96B88;
+  --pink-600: #B03D5A;
+  --pink-800: #7A2440;
+  --pink-900: #4B1227;
+  --cream:    #FAF7F2;
+  --tan:      #EDE5D0;
+  --tan-2:    #CEC4A4;
+  --ink:      #1A1410;
+  --ink-2:    #6B5A3A;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--sage-50);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+  background: var(--sage-800);
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--pink-400);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.header-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sage-100);
+}
+.header-score {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--pink-200);
+  letter-spacing: 1px;
+}
+
+/* SCREENS */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* LANDING */
+#landing {
+  min-height: calc(100vh - 55px);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+  background:
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(217,107,136,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(72,169,138,0.12) 0%, transparent 60%),
+    var(--sage-50);
+}
+#landing.active { display: flex; }
+.landing-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--pink-600);
+  margin-bottom: 20px;
+}
+.landing-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(52px, 10vw, 88px);
+  font-weight: 900;
+  line-height: 0.95;
+  color: var(--sage-800);
+  margin-bottom: 24px;
+}
+.landing-title span { color: var(--pink-600); font-style: italic; }
+.landing-sub {
+  font-size: 16px;
+  color: var(--ink-2);
+  line-height: 1.8;
+  max-width: 400px;
+  margin-bottom: 44px;
+}
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+/* BUTTONS */
+.btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 13px 28px;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.btn-primary { background: var(--sage-800); color: var(--sage-50); }
+.btn-primary:hover { background: var(--sage-600); transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--sage-800); border: 1.5px solid var(--sage-800); }
+.btn-ghost:hover { background: var(--sage-100); transform: translateY(-1px); }
+
+/* GAME */
+#game { max-width: 700px; margin: 0 auto; padding: 36px 24px 60px; }
+.progress-wrap {
+  height: 3px; background: var(--sage-200);
+  border-radius: 2px; margin-bottom: 28px; overflow: hidden;
+}
+.progress-fill {
+  height: 3px;
+  background: linear-gradient(90deg, var(--sage-400), var(--pink-400));
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  width: 0%;
+}
+.case-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.case-tag {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--pink-600);
+}
+.case-num {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--tan-2); letter-spacing: 1px;
+}
+.case-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 700;
+  color: var(--sage-900); margin-bottom: 24px;
+  padding-bottom: 16px; border-bottom: 1px dashed var(--tan-2);
+}
+.transcript {
+  background: white; border: 1px solid var(--sage-200);
+  border-left: 4px solid var(--sage-400);
+  border-radius: 4px; padding: 20px 22px; margin-bottom: 20px;
+}
+.speaker {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--sage-600); margin-bottom: 5px;
+}
+.line { font-style: italic; font-size: 15px; line-height: 1.75; color: var(--ink); }
+.line + .speaker { margin-top: 16px; }
+.task-hint {
+  background: var(--pink-50); border: 1px solid var(--pink-100);
+  border-radius: 4px; padding: 10px 16px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 0.5px; color: var(--pink-800); margin-bottom: 20px;
+}
+.choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.choice {
+  background: white; border: 1.5px solid var(--tan-2);
+  border-radius: 4px; padding: 13px 16px;
+  display: flex; align-items: flex-start; gap: 14px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.5; color: var(--ink);
+  transition: all 0.15s; text-align: left; width: 100%;
+}
+.choice:hover:not(:disabled) {
+  border-color: var(--sage-400); background: var(--sage-50); transform: translateX(4px);
+}
+.choice:disabled { cursor: default; }
+.choice.correct { background: var(--sage-100); border-color: var(--sage-600); color: var(--sage-900); transform: none; }
+.choice.wrong   { background: var(--pink-50);  border-color: var(--pink-400); color: var(--pink-900); transform: none; }
+.choice-letter {
+  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
+  background: var(--sage-800); color: var(--sage-50);
+  min-width: 24px; height: 24px; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.choice.correct .choice-letter { background: var(--sage-600); }
+.choice.wrong   .choice-letter { background: var(--pink-600); }
+.verdict {
+  display: none; border-radius: 4px; padding: 18px 20px;
+  margin-bottom: 18px; font-size: 14px; line-height: 1.8;
+  animation: fadeSlide 0.3s ease;
+}
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.verdict.show { display: block; }
+.verdict.ok  { background: var(--sage-100); border: 1px solid var(--sage-400); color: var(--sage-900); }
+.verdict.bad { background: var(--pink-50);  border: 1px solid var(--pink-200); color: var(--pink-900); }
+.verdict-label {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; display: block;
+}
+.verdict-fallacy {
+  font-family: 'Playfair Display', serif; font-size: 18px;
+  font-weight: 700; margin-bottom: 8px; display: block;
+}
+.verdict-body { display: block; }
+.game-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+/* GLOSSARY */
+#glossary { max-width: 700px; margin: 0 auto; padding: 36px 24px 60px; }
+.glossary-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+.glossary-header h2 {
+  font-family: 'Playfair Display', serif; font-size: 30px;
+  font-weight: 700; color: var(--sage-800);
+}
+.glossary-card {
+  background: white; border: 1px solid var(--sage-200);
+  border-top: 4px solid var(--sage-400);
+  border-radius: 4px; padding: 20px 22px;
+  margin-bottom: 14px; transition: transform 0.15s;
+}
+.glossary-card:hover { transform: translateY(-2px); }
+.glossary-name {
+  font-family: 'Playfair Display', serif; font-size: 20px;
+  font-weight: 700; color: var(--sage-900); margin-bottom: 3px;
+}
+.glossary-tag {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--pink-600); margin-bottom: 10px;
+}
+.glossary-desc { font-size: 14px; line-height: 1.7; color: var(--ink); margin-bottom: 12px; }
+.glossary-example {
+  background: var(--sage-50); border-left: 3px solid var(--sage-400);
+  padding: 10px 14px; font-style: italic;
+  font-size: 13px; color: var(--ink-2); border-radius: 0 3px 3px 0;
+}
+
+/* RESULTS */
+#results {
+  min-height: calc(100vh - 55px);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 60px 24px;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(72,169,138,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(217,107,136,0.1) 0%, transparent 60%),
+    var(--sage-50);
+}
+#results.active { display: flex; }
+.stamp {
+  display: inline-block; font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--pink-600); border: 2px solid var(--pink-400);
+  padding: 5px 20px; transform: rotate(-2deg);
+  margin-bottom: 32px; opacity: 0.85;
+}
+.results-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(36px, 7vw, 56px); font-weight: 900;
+  color: var(--sage-800); margin-bottom: 12px; line-height: 1.1;
+}
+.results-sub { font-style: italic; color: var(--ink-2); font-size: 16px; margin-bottom: 44px; }
+.stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 44px; flex-wrap: wrap; }
+.stat-box {
+  background: white; border: 1px solid var(--sage-200);
+  border-radius: 4px; padding: 22px 36px; min-width: 120px;
+}
+.stat-val {
+  font-family: 'Playfair Display', serif; font-size: 48px;
+  font-weight: 900; line-height: 1; color: var(--sage-800);
+}
+.stat-key {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--pink-600); margin-top: 6px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">🕵️ The Fallacy Files</div>
+  <div class="header-score" id="header-score">Score: 0 &nbsp;·&nbsp; 0 / 7</div>
+</div>
+
+<!-- LANDING -->
+<div id="landing" class="screen active">
+  <div class="landing-eyebrow">Logic · Deduction · Truth</div>
+  <h1 class="landing-title">The<br/><span>Fallacy</span><br/>Files</h1>
+  <p class="landing-sub">Seven cases. Seven lies dressed up as logic. Can you spot the trick before the argument fools you?</p>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="startGame()">Open the Files</button>
+    <button class="btn btn-ghost"   onclick="showGlossary('landing')">Study the Glossary</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game" class="screen">
+  <div class="progress-wrap"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="case-meta">
+    <span class="case-tag">Case File</span>
+    <span class="case-num" id="case-num">001 · 1 of 7</span>
+  </div>
+  <div class="case-title" id="case-title"></div>
+  <div class="transcript">
+    <div class="speaker" id="speaker-a"></div>
+    <div class="line"    id="line-a"></div>
+    <div class="speaker" id="speaker-b"></div>
+    <div class="line"    id="line-b"></div>
+  </div>
+  <div class="task-hint">🔍 Detective's task — identify the logical fallacy in Person B's argument.</div>
+  <div class="choices" id="choices"></div>
+  <div class="verdict" id="verdict">
+    <span class="verdict-label"   id="verdict-label"></span>
+    <span class="verdict-fallacy" id="verdict-fallacy"></span>
+    <span class="verdict-body"    id="verdict-body"></span>
+  </div>
+  <div class="game-actions">
+    <button class="btn btn-primary" id="btn-next" style="display:none" onclick="nextCase()">Next Case →</button>
+    <button class="btn btn-ghost" onclick="showGlossary('game')">Glossary</button>
+  </div>
+</div>
+
+<!-- GLOSSARY -->
+<div id="glossary" class="screen">
+  <div class="glossary-header">
+    <button class="btn btn-ghost" onclick="goBack()">← Back</button>
+    <h2>Fallacy Glossary</h2>
+  </div>
+  <div id="glossary-content"></div>
+</div>
+
+<!-- RESULTS -->
+<div id="results" class="screen">
+  <div class="stamp">Case Closed</div>
+  <div class="results-headline" id="result-headline"></div>
+  <div class="results-sub"      id="result-sub"></div>
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-val" id="r-score"></div>
+      <div class="stat-key">Points</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="r-correct"></div>
+      <div class="stat-key">Correct</div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="startGame()">Play Again</button>
+    <button class="btn btn-ghost"   onclick="showGlossary('results')">Review Glossary</button>
+  </div>
+</div>
+
+<script>
+const CASES = [
+  {
+    id:"001", title:"The Midnight Debate",
+    speakerA:"Citizen", speakerB:"Politician",
+    lineA:"Senator, I think we should invest more in public libraries.",
+    lineB:"Why should anyone listen to you about public policy? You dropped out of college!",
+    choices:[
+      {text:"Straw Man — misrepresenting the argument to attack it",   correct:false},
+      {text:"Ad Hominem — attacking the person instead of their idea", correct:true},
+      {text:"False Dichotomy — presenting only two extreme options",   correct:false},
+      {text:"Appeal to Authority — using status to win the argument",  correct:false},
+    ],
+    fallacy:"Ad Hominem",
+    explanation:"Instead of addressing whether libraries deserve more funding, the politician attacks the citizen's education. Whether someone attended college has nothing to do with the merit of their argument. This is a classic Ad Hominem fallacy.",
+  },
+  {
+    id:"002", title:"The Health Food Argument",
+    speakerA:"Friend A", speakerB:"Friend B",
+    lineA:"I try to eat more vegetables and less processed food.",
+    lineB:"So you're saying everyone who eats fast food is a terrible person and deserves to be sick?",
+    choices:[
+      {text:"Ad Hominem — attacking Friend A's character",                     correct:false},
+      {text:"Slippery Slope — assuming a chain of bad outcomes",               correct:false},
+      {text:"Straw Man — distorting the argument to make it easier to attack", correct:true},
+      {text:"Bandwagon — appealing to what most people do",                    correct:false},
+    ],
+    fallacy:"Straw Man",
+    explanation:"Friend A simply said they try to eat healthier. Friend B invented a completely different, more extreme claim and attacked that instead. Misrepresenting someone's position to make it easier to knock down is the Straw Man fallacy.",
+  },
+  {
+    id:"003", title:"The Night Train Decision",
+    speakerA:"Passenger", speakerB:"Conductor",
+    lineA:"Should we delay the train a few minutes for the late passengers?",
+    lineB:"You're either with us and we leave on time, or you're against us and the whole system collapses.",
+    choices:[
+      {text:"False Dichotomy — reducing to only two extreme options",  correct:true},
+      {text:"Appeal to Fear — using intimidation to force agreement",  correct:false},
+      {text:"Red Herring — introducing an irrelevant topic",           correct:false},
+      {text:"Circular Reasoning — the conclusion repeats the premise", correct:false},
+    ],
+    fallacy:"False Dichotomy",
+    explanation:"The conductor pretends there are only two options: leave on time OR the whole system collapses. Many middle grounds exist — delay five minutes, alert the platform, check the schedule. Forcing only two extreme choices is the False Dichotomy fallacy.",
+  },
+  {
+    id:"004", title:"The Slippery Stairs",
+    speakerA:"Student", speakerB:"Parent",
+    lineA:"I'd like to try taking an art elective next semester.",
+    lineB:"If you take art, you'll stop studying, fail your exams, drop out, and end up with no future.",
+    choices:[
+      {text:"Appeal to Authority — citing an expert without evidence",          correct:false},
+      {text:"Slippery Slope — one small step inevitably leads to disaster",     correct:true},
+      {text:"Hasty Generalization — drawing conclusions from limited evidence", correct:false},
+      {text:"Straw Man — misrepresenting the original claim",                   correct:false},
+    ],
+    fallacy:"Slippery Slope",
+    explanation:"One art class doesn't automatically trigger a chain of disasters. The parent jumps from a small, harmless decision to an extreme, unlikely outcome without showing how each step follows. That's the Slippery Slope fallacy.",
+  },
+  {
+    id:"005", title:"The Stadium Survey",
+    speakerA:"Coach", speakerB:"Analyst",
+    lineA:"Our team's new strategy isn't working well this season.",
+    lineB:"I asked five fans outside the stadium and they all loved it. Clearly the strategy is perfect.",
+    choices:[
+      {text:"Ad Hominem — insulting the coach's judgment",                        correct:false},
+      {text:"Appeal to Authority — citing famous sports experts",                 correct:false},
+      {text:"Hasty Generalization — broad conclusion from a tiny, biased sample", correct:true},
+      {text:"Red Herring — bringing up fan satisfaction to distract",             correct:false},
+    ],
+    fallacy:"Hasty Generalization",
+    explanation:"Five fans at a gate are not a representative sample. Drawing the sweeping conclusion 'the strategy is perfect' from such a tiny, self-selected group is a Hasty Generalization — far too small a sample to support the claim.",
+  },
+  {
+    id:"006", title:"The Midnight Munchies",
+    speakerA:"Roommate A", speakerB:"Roommate B",
+    lineA:"Should we really be eating instant noodles every night for dinner?",
+    lineB:"Billions of people eat instant noodles every day. It must be totally fine and healthy!",
+    choices:[
+      {text:"Bandwagon — popular = must be true or good",           correct:true},
+      {text:"False Dichotomy — only two options presented",         correct:false},
+      {text:"Circular Reasoning — conclusion restates the premise", correct:false},
+      {text:"Slippery Slope — one choice leads to a chain of harm", correct:false},
+    ],
+    fallacy:"Bandwagon",
+    explanation:"Popularity doesn't determine truth or health. Many people doing something doesn't make it beneficial — history has plenty of widespread practices later found harmful. Assuming something must be good because it's popular is the Bandwagon fallacy.",
+  },
+  {
+    id:"007", title:"The Final Testimony",
+    speakerA:"Juror", speakerB:"Defense Lawyer",
+    lineA:"Can you explain why your client should be considered innocent?",
+    lineB:"My client is innocent because he did not commit the crime.",
+    choices:[
+      {text:"Ad Hominem — attacking the juror's question",                        correct:false},
+      {text:"Appeal to Emotion — manipulating feelings instead of reasoning",     correct:false},
+      {text:"Red Herring — changing the subject to mislead",                      correct:false},
+      {text:"Circular Reasoning — the conclusion is a restatement of the claim",  correct:true},
+    ],
+    fallacy:"Circular Reasoning",
+    explanation:"The lawyer's reason for innocence is simply a restatement of the claim that needs proving. 'He is innocent because he did not commit the crime' says nothing new — it's the same statement twice. This is Circular Reasoning, also known as Begging the Question.",
+  },
+];
+
+const GLOSSARY = [
+  {name:"Ad Hominem",           tag:"Personal Attack",      desc:"Attacking the person making the argument instead of the argument itself.",                        example:'"You can\'t trust their opinion — they never even finished school!"'},
+  {name:"Straw Man",            tag:"Misrepresentation",    desc:"Misrepresenting someone's argument in a weaker form to make it easier to attack.",                 example:'"You want to cut the budget? So you want to destroy the whole department!"'},
+  {name:"False Dichotomy",      tag:"Either/Or Fallacy",    desc:"Presenting only two options as if no middle ground or other possibilities exist.",                 example:'"You\'re either with us or against us."'},
+  {name:"Slippery Slope",       tag:"Chain of Events",      desc:"Claiming one small step will inevitably lead to extreme negative consequences.",                   example:'"If we allow extensions, soon nobody will ever meet any deadline."'},
+  {name:"Hasty Generalization", tag:"Bad Sample",           desc:"Drawing a broad conclusion from a sample that is too small or unrepresentative.",                  example:'"I met two rude people from that city — everyone there must be rude."'},
+  {name:"Bandwagon",            tag:"Appeal to Popularity", desc:"Assuming something must be true or good simply because many people believe or do it.",              example:'"Millions eat this every day, so it must be safe!"'},
+  {name:"Circular Reasoning",   tag:"Begging the Question", desc:"Using the conclusion as a premise — the reasoning goes in a circle without providing real proof.", example:'"The law is right because it is the law."'},
+];
+
+const state = { caseIndex:0, score:0, correct:0, answered:false, prevScreen:"landing" };
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function updateHeader() {
+  document.getElementById('header-score').innerHTML =
+    `Score: ${state.score} &nbsp;·&nbsp; ${state.correct} / ${CASES.length}`;
+}
+
+function startGame() {
+  state.caseIndex = 0; state.score = 0; state.correct = 0; state.answered = false;
+  updateHeader();
+  loadCase(0);
+  showScreen('game');
+}
+
+function loadCase(idx) {
+  state.answered = false;
+  const c = CASES[idx];
+  const pct = Math.round((idx / CASES.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('case-num').textContent    = `${c.id} · ${idx + 1} of ${CASES.length}`;
+  document.getElementById('case-title').textContent  = c.title;
+  document.getElementById('speaker-a').textContent   = c.speakerA;
+  document.getElementById('line-a').textContent      = `"${c.lineA}"`;
+  document.getElementById('speaker-b').textContent   = c.speakerB;
+  document.getElementById('line-b').textContent      = `"${c.lineB}"`;
+
+  const letters = ['A','B','C','D'];
+  const container = document.getElementById('choices');
+  container.innerHTML = '';
+  c.choices.forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.innerHTML = `<span class="choice-letter">${letters[i]}</span><span>${ch.text}</span>`;
+    btn.addEventListener('click', () => selectAnswer(i, ch.correct));
+    container.appendChild(btn);
+  });
+
+  document.getElementById('verdict').className = 'verdict';
+  document.getElementById('btn-next').style.display = 'none';
+}
+
+function selectAnswer(idx, isCorrect) {
+  if (state.answered) return;
+  state.answered = true;
+
+  const c = CASES[state.caseIndex];
+  const buttons = document.getElementById('choices').querySelectorAll('.choice');
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (c.choices[i].correct) btn.classList.add('correct');
+  });
+  if (!isCorrect) buttons[idx].classList.add('wrong');
+
+  if (isCorrect) { state.score += 10; state.correct += 1; }
+
+  const verdict = document.getElementById('verdict');
+  verdict.className = isCorrect ? 'verdict show ok' : 'verdict show bad';
+  document.getElementById('verdict-label').textContent   = isCorrect ? '✓ Correct!' : '✗ Not quite. The fallacy was:';
+  document.getElementById('verdict-fallacy').textContent = c.fallacy;
+  document.getElementById('verdict-body').textContent    = c.explanation;
+  updateHeader();
+
+  const btnNext = document.getElementById('btn-next');
+  btnNext.style.display = 'inline-block';
+  btnNext.textContent = state.caseIndex === CASES.length - 1 ? 'Close the Files →' : 'Next Case →';
+}
+
+function nextCase() {
+  state.caseIndex++;
+  if (state.caseIndex >= CASES.length) showResults();
+  else loadCase(state.caseIndex);
+}
+
+function showGlossary(from) {
+  state.prevScreen = from;
+  const container = document.getElementById('glossary-content');
+  container.innerHTML = '';
+  GLOSSARY.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'glossary-card';
+    card.innerHTML = `
+      <div class="glossary-name">${g.name}</div>
+      <div class="glossary-tag">${g.tag}</div>
+      <div class="glossary-desc">${g.desc}</div>
+      <div class="glossary-example">${g.example}</div>
+    `;
+    container.appendChild(card);
+  });
+  showScreen('glossary');
+}
+
+function goBack() { showScreen(state.prevScreen); }
+
+function showResults() {
+  const pct = Math.round((state.correct / CASES.length) * 100);
+  let headline, sub;
+  if (pct === 100)    { headline = "Master Detective!";      sub = "A perfect record. Logic has no secrets from you."; }
+  else if (pct >= 71) { headline = "Sharp Eye, Detective.";  sub = "You spotted most of the tricks. Stay on guard."; }
+  else if (pct >= 43) { headline = "The Truth Is Slippery."; sub = "You're on the right track, but fallacies still slip past you."; }
+  else                { headline = "Back to the Academy.";   sub = "Fallacies are crafty. Review the glossary and try again."; }
+
+  document.getElementById('result-headline').textContent = headline;
+  document.getElementById('result-sub').textContent      = sub;
+  document.getElementById('r-score').textContent         = state.score;
+  document.getElementById('r-correct').textContent       = state.correct;
+  showScreen('results');
+}
+</script>
+</body>
+</html>
